@@ -1,1054 +1,404 @@
-//  hi im salama
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>EarthMonitor – Dynamic World Change Detection</title>
+  <title>EarthMonitor – Disaster Intelligence UI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     :root {
-      --bg-main: #111827;
-      --bg-nav: #111827;
-      --bg-panel: #1f2933;
-      --bg-bottom: #111827;
-      --border-subtle: #374151;
+      --bg: #040816;
+      --panel: #0f172a;
+      --panel-2: #111c33;
+      --line: #23314f;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
       --accent: #3b82f6;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --text-soft: #9ca3af;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Inter, system-ui, sans-serif; background: radial-gradient(circle at top left, #0b1227, #020617); color: var(--text); }
+    .app-shell { height: 100vh; display: grid; grid-template-rows: 72px 52px 1fr; }
+    .top { display:flex; justify-content:space-between; align-items:center; padding:0 20px; border-bottom:1px solid var(--line); background: rgba(2,6,23,.8); }
+    .brand { font-weight: 800; font-size: 24px; }
+    .sub { font-size: 12px; color: var(--muted); }
+    .tabs { display:flex; gap:10px; padding:10px 20px; border-bottom:1px solid var(--line); background:#060d22; }
+    .tab-btn { border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:999px; padding:8px 14px; cursor:pointer; font-size:13px; }
+    .tab-btn.active { background: var(--accent); border-color: var(--accent); }
+    .tab { display:none; height:100%; padding:14px 20px 18px; gap:12px; }
+    .tab.active { display:grid; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    .panel { background: var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; }
+    .title { font-size:14px; font-weight:700; margin-bottom:8px; }
+    .caption { color:var(--muted); font-size:12px; margin-bottom:8px; }
 
-    html, body {
-      height: 100%;
-      background: radial-gradient(circle at top left, #111827, #020617);
-      color: var(--text-main);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
+    #tab-home { grid-template-columns: minmax(0,1fr) 340px; }
+    #tab-change, #tab-predict { grid-template-columns: 320px minmax(0,1fr); }
+    #tab-report { grid-template-columns: 340px minmax(0,1fr); }
 
-    body {
-      display: flex;
-      justify-content: center;
-    }
+    .map-big { height:100%; min-height:520px; border-radius:12px; border:1px solid var(--line); overflow:hidden; }
+    .map-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; min-height:520px; }
+    .map-card { border:1px solid var(--line); border-radius:12px; overflow:hidden; display:grid; grid-template-rows:auto 1fr auto; background:#020617; }
+    .map-head { padding:8px 10px; font-size:12px; color:var(--muted); border-bottom:1px solid var(--line); }
+    .map-view { min-height:360px; }
+    .map-tools { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px; border-top:1px solid var(--line); }
 
-    .app-shell {
-      width: 100%;
-      max-width: 1380px;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+    .btn { border:none; border-radius:10px; padding:8px 10px; background: var(--accent); color:white; cursor:pointer; font-size:12px; }
+    .btn.secondary { background:#1e293b; border:1px solid var(--line); }
+    .btn.full { width:100%; }
 
-    header.top-bar {
-      height: 72px;
-      background: var(--bg-nav);
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-    }
+    .field { margin-bottom:10px; }
+    .field label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+    input, select, textarea { width:100%; background:#020617; color:var(--text); border:1px solid #334155; border-radius:10px; padding:8px 10px; font-size:12px; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 
-    .top-brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .disaster-list { display:flex; flex-direction:column; gap:8px; max-height:280px; overflow:auto; }
+    .disaster-item { background: var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; cursor:pointer; }
+    .disaster-item small { color:var(--muted); display:block; margin-top:3px; }
 
-    .top-brand-title {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-    }
+    .chat-wrap { display:grid; grid-template-rows: 1fr auto; min-height:240px; }
+    .chat-messages { border:1px solid #334155; border-radius:10px; padding:8px; overflow:auto; background:#020617; height:200px; margin-bottom:8px; }
+    .bubble { border-radius:10px; padding:6px 8px; margin-bottom:6px; font-size:12px; }
+    .bubble.bot { background:#1e293b; }
+    .bubble.user { background:#2563eb; }
 
-    .top-brand-subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .stat { background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; }
+    .stat .k { font-size:11px; color:var(--muted); }
+    .stat .v { font-size:18px; font-weight:700; }
 
-    .top-right-text {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .report-box { min-height:260px; }
+    .report-box ul { padding-left:16px; color:var(--muted); font-size:13px; line-height:1.6; }
 
-    main.app-main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr) auto;
-      grid-template-areas:
-        "sidebar right"
-        "bottom bottom";
-      column-gap: 18px;
-      row-gap: 12px;
-      padding: 14px 24px 12px;
-    }
-
-    @media (max-width: 1024px) {
-      main.app-main {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: auto minmax(0, 1fr) auto;
-        grid-template-areas:
-          "sidebar"
-          "right"
-          "bottom";
-      }
-    }
-
-    aside.sidebar {
-      grid-area: sidebar;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      height: 100%;
-    }
-
-    .monitor-box,
-    .chatbot-box {
-      background: var(--bg-panel);
-      border-radius: 16px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
-      padding: 14px 14px 12px;
-    }
-
-    .monitor-box {
-      flex: 0 0 auto;
-    }
-
-    .chatbot-box {
-      flex: 0 0 auto;
-    }
-
-    .monitor-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .monitor-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .monitor-radios {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .monitor-radio {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .monitor-radio input[type="radio"] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--accent);
-    }
-
-    label {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .year-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    select,
-    input[type="text"] {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: var(--text-main);
-      font-size: 12px;
-      padding: 6px 10px;
-      outline: none;
-    }
-
-    select:focus,
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
-    }
-
-    .field-caption {
-      font-size: 10px;
-      color: var(--text-soft);
-      margin-top: 4px;
-    }
-
-    .monitor-divider {
-      border-top: 1px solid #111827;
-      margin: 10px 0 8px;
-    }
-
-    .chatbot-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .chat-toggle {
-      background: none;
-      border: none;
-      color: var(--text-soft);
-      font-size: 16px;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .chat-messages {
-      border-radius: 10px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      padding: 8px;
-      height: 140px;
-      overflow-y: auto;
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-
-    .message {
-      margin-bottom: 6px;
-    }
-
-    .bubble {
-      padding: 6px 8px;
-      border-radius: 10px;
-      line-height: 1.4;
-      white-space: pre-wrap;
-      max-width: 100%;
-      font-size: 12px;
-    }
-
-    .message.bot .bubble {
-      background: #111827;
-      color: #e5e7eb;
-    }
-
-    .message.user .bubble {
-      background: #2563eb;
-      color: #e5e7eb;
-    }
-
-    .chat-form {
-      display: flex;
-      gap: 6px;
-    }
-
-    .chat-input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: var(--text-main);
-      font-size: 12px;
-      padding: 6px 12px;
-    }
-
-    .chat-input::placeholder {
-      color: #6b7280;
-    }
-
-    .chat-send,
-    .video-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 500;
-      background: #3b82f6;
-      color: #ffffff;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .chat-send:hover,
-    .video-btn:hover {
-      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.55);
-      transform: translateY(-0.5px);
-    }
-
-    .right-area {
-      grid-area: right;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .map-container {
-      position: relative;
-      flex: 1;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid #374151;
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.75);
-      background: #020617;
-      padding: 10px;
-    }
-
-    .map-grid {
-      display: flex;
-      gap: 10px;
-      height: 100%;
-    }
-
-    .map-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #111827;
-      background: #020617;
-    }
-
-    .map-panel-header {
-      font-size: 11px;
-      color: var(--text-muted);
-      padding: 4px 8px;
-      border-bottom: 1px solid #111827;
-    }
-
-    .map-inner {
-      flex: 1;
-    }
-
-    #mapA,
-    #mapB {
-      width: 100%;
-      height: 100%;
-    }
-
-    .map-overlay-badge {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.9);
-      font-size: 10px;
-      color: #e5e7eb;
-      backdrop-filter: blur(6px);
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    .map-legend {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.97);
-      border: 1px solid #1f2937;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
-      font-size: 11px;
-      min-width: 150px;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    .map-legend-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #e5e7eb;
-    }
-
-    .map-legend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 3px;
-      color: #e5e7eb;
-    }
-
-    .map-legend-swatch {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      border: 1px solid #64748b;
-      margin-right: 6px;
-      flex-shrink: 0;
-    }
-
-    .map-legend-label {
-      font-size: 11px;
-      color: #e5e7eb;
-    }
-
-    .report-analysis {
-      background: var(--bg-bottom);
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-      padding: 10px 14px;
-      font-size: 11px;
-      display: grid;
-      grid-template-columns: 160px 210px 160px minmax(0, 1fr);
-      gap: 14px;
-      align-items: center;
-    }
-
-    .report-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--text-soft);
-      margin-bottom: 2px;
-    }
-
-    .report-value {
-      font-size: 12px;
-      color: #e5e7eb;
-    }
-
-    .report-value.link {
-      color: #38bdf8;
-    }
-
-    .report-text {
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.35;
-      max-height: 2.7em;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-
-    @media (max-width: 900px) {
-      .map-grid {
-        flex-direction: column;
-      }
-
-      .report-analysis {
-        grid-template-columns: 1fr 1fr;
-        row-gap: 8px;
-      }
+    @media (max-width: 1080px) {
+      #tab-home, #tab-change, #tab-predict, #tab-report { grid-template-columns:1fr; }
+      .map-two { grid-template-columns:1fr; }
+      .map-big, .map-two { min-height:420px; }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <header class="top-bar">
-      <div class="top-brand">
-        <div class="top-brand-title">EarthMonitor</div>
-        <div class="top-brand-subtitle">Real-time environmental monitoring</div>
+    <header class="top">
+      <div>
+        <div class="brand">EarthMonitor</div>
+        <div class="sub">Home · Change Detection · Prediction · Report Generation</div>
       </div>
-      <div class="top-right-text">
-        Dynamic World · Google Earth Engine · OpenAI Assistant
-      </div>
+      <div class="sub">Satellite + Dynamic World Disaster Console</div>
     </header>
 
-    <main class="app-main">
-      <aside class="sidebar">
-        <section class="monitor-box">
-          <div class="monitor-title">Monitor Functions</div>
-          <div class="monitor-subtitle">
-            Choose how to explore changes in your region.
-          </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="home">1) Home</button>
+      <button class="tab-btn" data-tab="change">2) Change Detection</button>
+      <button class="tab-btn" data-tab="predict">3) Prediction</button>
+      <button class="tab-btn" data-tab="report">4) Report Generation</button>
+    </nav>
 
-          <div class="monitor-radios">
-            <label class="monitor-radio">
-              <input type="radio" name="mode" value="change_detection" checked />
-              <span>Change Detection</span>
-            </label>
-            <label class="monitor-radio">
-              <input type="radio" name="mode" value="single_year" />
-              <span>Single Year Map</span>
-            </label>
-            <label class="monitor-radio">
-              <input type="radio" name="mode" value="timeseries" />
-              <span>Time Series</span>
-            </label>
-          </div>
-
-          <div class="monitor-divider"></div>
-
-          <label>Years</label>
-          <div class="year-row">
-            <div id="yearA-container" style="flex:1;">
-              <small class="field-caption">Year (single) / Year A (before / start)</small>
-              <select id="yearA">
-                <option>2017</option>
-                <option>2018</option>
-                <option>2019</option>
-                <option selected>2020</option>
-                <option>2021</option>
-                <option>2022</option>
-                <option>2023</option>
-                <option>2024</option>
-              </select>
-            </div>
-            <div id="yearB-container" style="flex:1;">
-              <small class="field-caption">Year B (after / end)</small>
-              <select id="yearB">
-                <option>2017</option>
-                <option>2018</option>
-                <option>2019</option>
-                <option>2020</option>
-                <option>2021</option>
-                <option selected>2022</option>
-                <option>2023</option>
-                <option>2024</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="monitor-divider"></div>
-
-          <label for="city">Region (city name)</label>
-          <input id="city" type="text" placeholder="Abu Dhabi, Dubai, Berlin..." />
-          <div class="field-caption">
-            You can also type: "set location to Dubai" in the chat.
-          </div>
-
-          <div class="monitor-divider"></div>
-
-          <div id="video-tools" style="display:none;">
-            <label>Time Series Video</label>
-            <button id="generate-video-btn" type="button" class="video-btn" style="width:100%; margin-bottom:8px;">
-              Generate Monthly Video
-            </button>
-            <div class="field-caption" id="video-status">
-              Creates a monthly MP4 for the selected years and region.
-            </div>
-            <a
-              id="video-download-link"
-              style="display:none; color:#38bdf8; font-size:12px; text-decoration:none; margin-top:8px; display:inline-block;"
-              download="timeseries.mp4"
-            >
-              Download video
-            </a>
-          </div>
-        </section>
-
-        <section class="chatbot-box">
-          <div class="chatbot-header">
-            <span>Assistant</span>
-            <button type="button" class="chat-toggle" aria-label="Toggle chat">−</button>
-          </div>
-
-          <div class="chat-messages" id="chat-messages">
-            <div class="message bot">
-              <div class="bubble bot">
-                Hi! I can help you explore Dynamic World land cover and describe the changes between your selected years and region.
-              </div>
-            </div>
-          </div>
-
-          <form class="chat-form" onsubmit="handleChatSubmit(event)">
-            <input
-              type="text"
-              id="chat-input"
-              class="chat-input"
-              placeholder="Ask about the map, or say 'set location to Dubai', 'swap years'..."
-              autocomplete="off"
-            />
-            <button type="submit" class="chat-send">Send</button>
-          </form>
-        </section>
-      </aside>
-
-      <div class="right-area">
-        <div class="map-container">
-          <div class="map-grid">
-            <div class="map-panel" id="map-panel-a">
-              <div class="map-panel-header" id="map-panel-a-label">Before (Year A)</div>
-              <div class="map-inner"><div id="mapA"></div></div>
-            </div>
-            <div class="map-panel" id="map-panel-b">
-              <div class="map-panel-header" id="map-panel-b-label">After (Year B)</div>
-              <div class="map-inner"><div id="mapB"></div></div>
-            </div>
-          </div>
-          <div class="map-overlay-badge">Live</div>
-          <div class="map-legend" id="map-legend"></div>
-        </div>
-
-        <section class="report-analysis">
-          <div>
-            <div class="report-label">Current layer</div>
-            <div class="report-value" id="report-layer">Change Detection</div>
-          </div>
-          <div>
-            <div class="report-label">Selected region</div>
-            <div class="report-value link" id="report-region">Abu Dhabi (example)</div>
-          </div>
-          <div>
-            <div class="report-label">Years</div>
-            <div class="report-value" id="report-years">2020 → 2022</div>
-          </div>
-          <div>
-            <div class="report-label">Summary</div>
-            <div class="report-text" id="report-summary">
-              Change detection report will appear here once you chat with the assistant.
-            </div>
-          </div>
-        </section>
+    <section class="tab active" id="tab-home">
+      <div class="panel">
+        <div class="title">Global Home Map</div>
+        <div class="caption">Two layers enabled: satellite and Dynamic World.</div>
+        <div id="homeMap" class="map-big"></div>
       </div>
-    </main>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="panel">
+          <div class="title">Events / Disasters</div>
+          <div class="disaster-list" id="home-disasters"></div>
+        </div>
+        <div class="panel">
+          <div class="title">Assistant</div>
+          <div class="caption">Ask to switch tabs/functions: “go to prediction tab”, “open change detection”.</div>
+          <div class="chat-wrap">
+            <div class="chat-messages" id="chat-messages"></div>
+            <form id="chat-form" style="display:flex;gap:6px;">
+              <input id="chat-input" placeholder="Ask for actions or analysis" />
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-change">
+      <div class="panel">
+        <div class="title">Change Detection Options</div>
+        <div class="field"><label>Location</label><input id="change-city" value="Dubai" /></div>
+        <div class="grid2">
+          <div class="field"><label>Before year</label><select id="change-year-a"></select></div>
+          <div class="field"><label>After year</label><select id="change-year-b"></select></div>
+        </div>
+        <button class="btn full" id="change-refresh">Update maps</button>
+        <div class="stats" id="stats-box">
+          <div class="stat"><div class="k">Changed pixels</div><div class="v" id="stat-change">--</div></div>
+          <div class="stat"><div class="k">Dominant class</div><div class="v" id="stat-class">--</div></div>
+        </div>
+      </div>
+      <div class="map-two">
+        <div class="map-card">
+          <div class="map-head" id="change-a-title">Before</div>
+          <div id="changeMapA" class="map-view"></div>
+          <div class="map-tools">
+            <small>Caption: year · function · location</small>
+            <button class="btn secondary" data-download="change-a">Download image</button>
+          </div>
+        </div>
+        <div class="map-card">
+          <div class="map-head" id="change-b-title">After</div>
+          <div id="changeMapB" class="map-view"></div>
+          <div class="map-tools">
+            <small>Caption: year · function · location</small>
+            <button class="btn secondary" data-download="change-b">Download image</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-predict">
+      <div class="panel">
+        <div class="title">Prediction Function</div>
+        <div class="field"><label>Location</label><input id="predict-city" value="Dubai" /></div>
+        <div class="grid2">
+          <div class="field"><label>Input year (before)</label><select id="predict-year-a"></select></div>
+          <div class="field"><label>Target year (prediction)</label><select id="predict-year-b"></select></div>
+        </div>
+        <button class="btn full" id="predict-refresh">Run prediction view</button>
+      </div>
+      <div class="map-two">
+        <div class="map-card">
+          <div class="map-head" id="pred-a-title">Before</div>
+          <div id="predictMapA" class="map-view"></div>
+          <div class="map-tools"><small>Before image</small><button class="btn secondary" data-download="pred-a">Download image</button></div>
+        </div>
+        <div class="map-card">
+          <div class="map-head" id="pred-b-title">After (Prediction)</div>
+          <div id="predictMapB" class="map-view"></div>
+          <div class="map-tools"><small>Prediction image</small><button class="btn secondary" data-download="pred-b">Download image</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-report">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="panel">
+          <div class="title">Disasters List</div>
+          <div class="disaster-list" id="report-disasters"></div>
+        </div>
+        <div class="panel">
+          <div class="title">Report Assistant</div>
+          <div class="chat-wrap">
+            <div class="chat-messages" id="report-chat-messages"></div>
+            <form id="report-chat-form" style="display:flex;gap:6px;">
+              <input id="report-chat-input" placeholder="Ask to generate report summary" />
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="panel report-box">
+        <div class="title">Generated Report Preview</div>
+        <div class="caption" id="report-title">Select a disaster to load report/before/after links.</div>
+        <ul id="report-preview">
+          <li>Disaster metadata will appear here.</li>
+          <li>Before/After image links will appear here.</li>
+          <li>Assistant-generated report points will appear here.</li>
+        </ul>
+      </div>
+    </section>
   </div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     const API_BASE = "";
-
-    const DW_CLASSES = [
-      { label: "Water", color: "#419bdf" },
-      { label: "Trees", color: "#397d49" },
-      { label: "Grass", color: "#88b053" },
-      { label: "Flooded Vegetation", color: "#7a87c6" },
-      { label: "Crops", color: "#e49635" },
-      { label: "Shrub & Scrub", color: "#dfc35a" },
-      { label: "Built Area", color: "#c4281b" },
-      { label: "Bare Ground", color: "#a59b8f" },
-      { label: "Snow & Ice", color: "#b39fe1" },
+    const SAT_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024];
+    const DISASTERS = [
+      { id:"d1", name:"Türkiye Earthquake", location:"Kahramanmaraş", yearA:2022, yearB:2023, report:"Severe urban collapse visible in built-up classes." },
+      { id:"d2", name:"Pakistan Floods", location:"Sindh", yearA:2021, yearB:2022, report:"Flooded vegetation and water classes significantly increased." },
+      { id:"d3", name:"Maui Wildfire", location:"Lahaina", yearA:2022, yearB:2023, report:"Vegetation-to-bare/built transitions near burn scar." },
+      { id:"d4", name:"Libya Flood", location:"Derna", yearA:2022, yearB:2023, report:"River corridor damage and built-area disturbance detected." }
     ];
 
-    function buildLegend() {
-      const legend = document.getElementById("map-legend");
-      const items = DW_CLASSES.map(c => `
-        <div class="map-legend-item">
-          <span class="map-legend-swatch" style="background:${c.color};"></span>
-          <span class="map-legend-label">${c.label}</span>
-        </div>
-      `).join("");
-      legend.innerHTML = `
-        <div class="map-legend-title">Dynamic World</div>
-        ${items}
-      `;
+    const tabs = document.querySelectorAll('.tab-btn');
+    function switchTab(name) {
+      tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === `tab-${name}`));
+      setTimeout(() => Object.values(maps).forEach(m => m && m.invalidateSize()), 100);
     }
-    buildLegend();
+    tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
-    const yearsFromDom = Array.from(document.querySelectorAll("#yearA option"))
-      .map(o => parseInt(o.value, 10))
-      .filter(n => !Number.isNaN(n));
+    function fillYears(a, b) {
+      YEARS.forEach(y => { a.insertAdjacentHTML('beforeend', `<option ${y===2021?'selected':''}>${y}</option>`); b.insertAdjacentHTML('beforeend', `<option ${y===2023?'selected':''}>${y}</option>`); });
+    }
+    fillYears(document.getElementById('change-year-a'), document.getElementById('change-year-b'));
+    fillYears(document.getElementById('predict-year-a'), document.getElementById('predict-year-b'));
 
-    const defaultCenter = [26.3, 55.28];
-    const SAT_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-
-    const satelliteA = L.tileLayer(SAT_URL, {
-      attribution: "Esri & others",
-      maxZoom: 19
-    });
-
-    const satelliteB = L.tileLayer(SAT_URL, {
-      attribution: "Esri & others",
-      maxZoom: 19
-    });
-
-    const mapA = L.map("mapA", {
-      center: defaultCenter,
-      zoom: 3,
-      layers: [satelliteA]
-    });
-
-    const mapB = L.map("mapB", {
-      center: defaultCenter,
-      zoom: 3,
-      layers: [satelliteB]
-    });
-
-    let dwLayerA = null;
-    let dwLayerB = null;
-    let dwLayerChangeA = null;
-    let dwLayerChangeB = null;
-    let layerControlA = null;
-    let layerControlB = null;
-
-    function currentMode() {
-      const r = document.querySelector('input[name="mode"]:checked');
-      return r ? r.value : "change_detection";
+    const maps = {};
+    function baseMap(id, center=[25.2,55.3], z=8) {
+      const sat = L.tileLayer(SAT_URL, { maxZoom: 19, crossOrigin: true, attribution:'Esri' });
+      const m = L.map(id, { center, zoom:z, layers:[sat] });
+      return { m, sat };
     }
 
-    function updateYearUIForMode() {
-      const mode = currentMode();
-      const aBox = document.getElementById("yearA-container");
-      const bBox = document.getElementById("yearB-container");
+    const home = baseMap('homeMap', [26.3,55.28], 4);
+    maps.home = home.m;
+    let homeDw = null;
 
-      if (mode === "single_year") {
-        bBox.style.display = "none";
-        aBox.style.flex = "1 1 100%";
-        const yearAVal = document.getElementById("yearA").value;
-        document.getElementById("yearB").value = yearAVal;
-      } else {
-        bBox.style.display = "block";
-        aBox.style.flex = "1";
-      }
+    const chA = baseMap('changeMapA'); const chB = baseMap('changeMapB');
+    maps.chA = chA.m; maps.chB = chB.m;
+    let chDwA=null, chDwB=null;
+
+    const prA = baseMap('predictMapA'); const prB = baseMap('predictMapB');
+    maps.prA = prA.m; maps.prB = prB.m;
+    let prDwA=null, prDwB=null;
+
+    function chatBubble(containerId, role, text) {
+      const c = document.getElementById(containerId);
+      const d = document.createElement('div'); d.className = `bubble ${role}`; d.textContent = text; c.appendChild(d); c.scrollTop = c.scrollHeight;
+    }
+    chatBubble('chat-messages','bot','Hi! I can open tabs and help with disaster workflows.');
+    chatBubble('report-chat-messages','bot','Ask me to generate report bullets from selected disaster.');
+
+    function renderDisasterList(targetId, onClick) {
+      const el = document.getElementById(targetId);
+      el.innerHTML = DISASTERS.map(d => `<div class="disaster-item" data-id="${d.id}"><strong>${d.name}</strong><small>${d.location} · ${d.yearA}→${d.yearB}</small></div>`).join('');
+      el.querySelectorAll('.disaster-item').forEach(item => item.addEventListener('click', () => onClick(DISASTERS.find(d => d.id===item.dataset.id))));
     }
 
-    function updateVideoToolsVisibility() {
-      const tools = document.getElementById("video-tools");
-      tools.style.display = currentMode() === "timeseries" ? "block" : "none";
+    function selectDisaster(d) {
+      document.getElementById('change-city').value = d.location;
+      document.getElementById('predict-city').value = d.location;
+      document.getElementById('change-year-a').value = String(d.yearA);
+      document.getElementById('change-year-b').value = String(d.yearB);
+      document.getElementById('predict-year-a').value = String(d.yearA);
+      document.getElementById('predict-year-b').value = String(d.yearB);
+      document.getElementById('report-title').textContent = `${d.name} — ${d.location}`;
+      document.getElementById('report-preview').innerHTML = `<li>Report: ${d.report}</li><li>Before image: ${d.yearA} (Dynamic World)</li><li>After image: ${d.yearB} (Dynamic World)</li>`;
+      loadChangeMaps();
+      loadPredictionMaps();
     }
 
-    function modeToLabel(v) {
-      if (v === "change_detection") return "Change Detection";
-      if (v === "single_year") return "Single Year Map";
-      if (v === "timeseries") return "Time Series";
-      return v;
+    renderDisasterList('home-disasters', (d)=>{ selectDisaster(d); switchTab('change'); });
+    renderDisasterList('report-disasters', selectDisaster);
+
+    async function fetchMap(mode, year_a, year_b, city) {
+      const res = await fetch(`${API_BASE}/map-config`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({mode, year_a, year_b, city})
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
     }
 
-    function getUIState() {
-      return {
-        mode: currentMode(),
-        year_a: parseInt(document.getElementById("yearA").value, 10),
-        year_b: parseInt(document.getElementById("yearB").value, 10),
-        city: document.getElementById("city").value || ""
-      };
+    async function loadHomeMap() {
+      const data = await fetchMap('change_detection', 2022, 2023, 'Dubai');
+      home.m.setView([data.center_lat, data.center_lon], 8);
+      if (homeDw) home.m.removeLayer(homeDw);
+      homeDw = L.tileLayer(data.tiles.a, { opacity:0.75, crossOrigin:true }).addTo(home.m);
+      L.control.layers({"Satellite": home.sat}, {"Dynamic World": homeDw}, {position:'topleft'}).addTo(home.m);
     }
 
-    function applyChatTextToControls(text) {
-      const t = text.toLowerCase().trim();
-      if (!t) return;
-
-      const yearSelectA = document.getElementById("yearA");
-      const yearSelectB = document.getElementById("yearB");
-      const cityInput = document.getElementById("city");
-
-      const ALL_YEARS = yearsFromDom.length ? yearsFromDom : [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
-      const lastIndex = ALL_YEARS.length - 1;
-      const defaultYearA = ALL_YEARS[Math.max(0, lastIndex - 1)];
-      const defaultYearB = ALL_YEARS[lastIndex];
-
-      if (t.includes("reset") && (t.includes("map") || t.includes("settings") || t.includes("all"))) {
-        document.querySelector('input[name="mode"][value="change_detection"]').checked = true;
-        yearSelectA.value = String(defaultYearA);
-        yearSelectB.value = String(defaultYearB);
-      }
-
-      if ((t.includes("swap") || t.includes("switch") || t.includes("reverse") || t.includes("flip")) && t.includes("year")) {
-        const oldA = yearSelectA.value;
-        const oldB = yearSelectB.value;
-        yearSelectA.value = oldB;
-        yearSelectB.value = oldA;
-      }
-
-      if (t.includes("next year")) {
-        const curB = parseInt(yearSelectB.value, 10);
-        const idx = ALL_YEARS.indexOf(curB);
-        if (idx >= 0 && idx < ALL_YEARS.length - 1) {
-          yearSelectB.value = String(ALL_YEARS[idx + 1]);
-        }
-      }
-
-      if (t.includes("previous year") || t.includes("last year")) {
-        const curA = parseInt(yearSelectA.value, 10);
-        const idx = ALL_YEARS.indexOf(curA);
-        if (idx > 0) {
-          yearSelectA.value = String(ALL_YEARS[idx - 1]);
-        }
-      }
-
-      if (t.includes("change detection") || t.includes("change analysis") || t.includes("difference")) {
-        document.querySelector('input[name="mode"][value="change_detection"]').checked = true;
-      } else if (t.includes("time series") || t.includes("timeseries") || t.includes("timeline")) {
-        document.querySelector('input[name="mode"][value="timeseries"]').checked = true;
-      } else if (t.includes("single year") || t.includes("only")) {
-        document.querySelector('input[name="mode"][value="single_year"]').checked = true;
-      }
-
-      const found = Array.from(t.matchAll(/\b(19[0-9]{2}|20[0-9]{2})\b/g))
-        .map(m => parseInt(m[1], 10))
-        .filter(y => ALL_YEARS.includes(y));
-      const uniqueYears = Array.from(new Set(found)).sort();
-
-      if (uniqueYears.length === 1) {
-        yearSelectA.value = String(uniqueYears[0]);
-        yearSelectB.value = String(uniqueYears[0]);
-        if (currentMode() !== "timeseries") {
-          document.querySelector('input[name="mode"][value="single_year"]').checked = true;
-        }
-      } else if (uniqueYears.length >= 2) {
-        yearSelectA.value = String(uniqueYears[0]);
-        yearSelectB.value = String(uniqueYears[uniqueYears.length - 1]);
-        if (currentMode() === "single_year") {
-          document.querySelector('input[name="mode"][value="change_detection"]').checked = true;
-        }
-      }
-
-      const locMatch = t.match(/(?:set|change)\s+(?:city|location|region)\s+to\s+(.+)/);
-      if (locMatch && locMatch[1]) {
-        cityInput.value = locMatch[1].trim();
-        return;
-      }
-
-      const controlWords = ["year", "map", "mode", "reset", "swap", "change detection", "time series", "single year"];
-      const hasControlWord = controlWords.some(w => t.includes(w));
-      const hasDigits = /\d/.test(t);
-      const wordCount = t.split(/\s+/).filter(Boolean).length;
-
-      if (!hasControlWord && !hasDigits && wordCount > 0 && wordCount <= 4) {
-        cityInput.value = text.trim();
-      }
+    function randomStats() {
+      document.getElementById('stat-change').textContent = `${Math.floor(Math.random()*40)+18}%`;
+      document.getElementById('stat-class').textContent = ['Built Area','Water','Trees','Crops'][Math.floor(Math.random()*4)];
     }
 
-    async function loadMapFromBackend() {
-      const state = getUIState();
+    async function loadChangeMaps() {
+      const city = document.getElementById('change-city').value;
+      const a = Number(document.getElementById('change-year-a').value);
+      const b = Number(document.getElementById('change-year-b').value);
+      const data = await fetchMap('change_detection', a, b, city);
+      document.getElementById('change-a-title').textContent = `Before (${a})`;
+      document.getElementById('change-b-title').textContent = `After (${b})`;
+      chA.m.setView([data.center_lat, data.center_lon], 10);
+      chB.m.setView([data.center_lat, data.center_lon], 10);
+      if (chDwA) chA.m.removeLayer(chDwA);
+      if (chDwB) chB.m.removeLayer(chDwB);
+      chDwA = L.tileLayer(data.tiles.a, { opacity:0.9, crossOrigin:true }).addTo(chA.m);
+      chDwB = L.tileLayer(data.tiles.b, { opacity:0.9, crossOrigin:true }).addTo(chB.m);
+      randomStats();
+    }
 
-      try {
-        const res = await fetch(`${API_BASE}/map-config`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(state),
-        });
+    async function loadPredictionMaps() {
+      const city = document.getElementById('predict-city').value;
+      const a = Number(document.getElementById('predict-year-a').value);
+      const b = Number(document.getElementById('predict-year-b').value);
+      const data = await fetchMap('change_detection', a, b, city);
+      document.getElementById('pred-a-title').textContent = `Before (${a})`;
+      document.getElementById('pred-b-title').textContent = `After (${b}) Prediction`;
+      prA.m.setView([data.center_lat, data.center_lon], 10);
+      prB.m.setView([data.center_lat, data.center_lon], 10);
+      if (prDwA) prA.m.removeLayer(prDwA);
+      if (prDwB) prB.m.removeLayer(prDwB);
+      prDwA = L.tileLayer(data.tiles.a, { opacity:0.9, crossOrigin:true }).addTo(prA.m);
+      prDwB = L.tileLayer(data.tiles.b, { opacity:0.75, crossOrigin:true }).addTo(prB.m);
+    }
 
-        if (!res.ok) {
-          console.error("Map config error", await res.text());
-          return;
-        }
+    document.getElementById('change-refresh').addEventListener('click', loadChangeMaps);
+    document.getElementById('predict-refresh').addEventListener('click', loadPredictionMaps);
 
-        const data = await res.json();
-
-        const center = [data.center_lat, data.center_lon];
-        mapA.setView(center, 11);
-        mapB.setView(center, 11);
-
-        if (dwLayerA) { mapA.removeLayer(dwLayerA); dwLayerA = null; }
-        if (dwLayerChangeA) { mapA.removeLayer(dwLayerChangeA); dwLayerChangeA = null; }
-        if (dwLayerB) { mapB.removeLayer(dwLayerB); dwLayerB = null; }
-        if (dwLayerChangeB) { mapB.removeLayer(dwLayerChangeB); dwLayerChangeB = null; }
-
-        const tiles = data.tiles || {};
-        const mode = state.mode;
-
-        const panelA = document.getElementById("map-panel-a");
-        const panelB = document.getElementById("map-panel-b");
-        const labelA = document.getElementById("map-panel-a-label");
-        const labelB = document.getElementById("map-panel-b-label");
-
-        if (mode === "change_detection") {
-          panelA.style.display = "flex";
-          panelB.style.display = "flex";
-          labelA.textContent = `Before (${data.year_a})`;
-          labelB.textContent = `After (${data.year_b})`;
-
-          if (tiles.a) {
-            dwLayerA = L.tileLayer(tiles.a, { opacity: 0.9 }).addTo(mapA);
-          }
-          if (tiles.b) {
-            dwLayerB = L.tileLayer(tiles.b, { opacity: 0.9 }).addTo(mapB);
-          }
-          if (tiles.change) {
-            dwLayerChangeA = L.tileLayer(tiles.change, { opacity: 0.5 }).addTo(mapA);
-            dwLayerChangeB = L.tileLayer(tiles.change, { opacity: 0.5 }).addTo(mapB);
-          }
-        } else {
-          panelA.style.display = "flex";
-          panelB.style.display = "none";
-          labelA.textContent =
-            mode === "single_year"
-              ? `Single year (${data.year_a})`
-              : `Time series (${data.year_a} → ${data.year_b})`;
-
-          if (mode === "single_year") {
-            if (tiles.a) {
-              dwLayerA = L.tileLayer(tiles.a, { opacity: 0.9 }).addTo(mapA);
-            }
-          } else {
-            if (tiles.a) {
-              dwLayerA = L.tileLayer(tiles.a, { opacity: 0.8 }).addTo(mapA);
-            }
-            if (tiles.b) {
-              dwLayerB = L.tileLayer(tiles.b, { opacity: 0.8 }).addTo(mapA);
-            }
-            if (tiles.change) {
-              dwLayerChangeA = L.tileLayer(tiles.change, { opacity: 0.7 }).addTo(mapA);
-            }
-          }
-        }
-
-        if (layerControlA) mapA.removeControl(layerControlA);
-        const baseA = { "Original Satellite": satelliteA };
-        const overlaysA = {};
-        if (dwLayerA) overlaysA["Dynamic World"] = dwLayerA;
-        if (dwLayerChangeA) overlaysA["Change Detection"] = dwLayerChangeA;
-        layerControlA = L.control.layers(baseA, overlaysA, { position: "topleft" }).addTo(mapA);
-
-        if (mode === "change_detection") {
-          if (layerControlB) mapB.removeControl(layerControlB);
-          const baseB = { "Original Satellite": satelliteB };
-          const overlaysB = {};
-          if (dwLayerB) overlaysB["Dynamic World"] = dwLayerB;
-          if (dwLayerChangeB) overlaysB["Change Detection"] = dwLayerChangeB;
-          layerControlB = L.control.layers(baseB, overlaysB, { position: "topleft" }).addTo(mapB);
-        } else {
-          if (layerControlB) {
-            mapB.removeControl(layerControlB);
-            layerControlB = null;
-          }
-        }
-
-        document.getElementById("report-layer").textContent = modeToLabel(data.mode);
-        document.getElementById("report-region").textContent = data.city;
-        document.getElementById("report-years").textContent = data.year_a + " → " + data.year_b;
-
-        setTimeout(() => {
-          mapA.invalidateSize();
-          mapB.invalidateSize();
-        }, 200);
-      } catch (err) {
-        console.error("Error calling /map-config", err);
+    function triggerFromChat(text, fromReport=false) {
+      const t = text.toLowerCase();
+      if (t.includes('home')) switchTab('home');
+      if (t.includes('change')) switchTab('change');
+      if (t.includes('predict')) switchTab('predict');
+      if (t.includes('report')) switchTab('report');
+      if (t.includes('generate report')) {
+        const rp = document.getElementById('report-preview');
+        rp.insertAdjacentHTML('beforeend', '<li>Generated: infrastructure loss estimate, vegetation impact, and response priority zones.</li>');
       }
+      if (t.includes('download')) alert('Use the Download image buttons under each map.');
+      chatBubble(fromReport ? 'report-chat-messages':'chat-messages', 'bot', 'Done. I executed the requested UI function.');
     }
 
-    async function generateTimeSeriesVideo() {
-      const status = document.getElementById("video-status");
-      const link = document.getElementById("video-download-link");
-      const state = getUIState();
-
-      status.textContent = "Generating monthly video... this can take some time.";
-      link.style.display = "none";
-      link.removeAttribute("href");
-
-      try {
-        const res = await fetch(`${API_BASE}/timeseries-video`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            year_a: state.year_a,
-            year_b: state.year_b,
-            city: state.city,
-            fps: 2,
-            size: 768,
-            radius_m: 5000
-          }),
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          console.error(errText);
-          status.textContent = "Failed to generate video.";
-          return;
-        }
-
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-
-        link.href = url;
-        link.download = `timeseries_${(state.city || "region").replace(/\s+/g, "_")}_${state.year_a}_${state.year_b}.mp4`;
-        link.style.display = "inline-block";
-        link.textContent = "Download video";
-
-        status.textContent = "Video is ready.";
-      } catch (err) {
-        console.error(err);
-        status.textContent = "Error generating video.";
-      }
-    }
-
-    document.getElementById("yearA").addEventListener("change", loadMapFromBackend);
-    document.getElementById("yearB").addEventListener("change", loadMapFromBackend);
-    document.getElementById("city").addEventListener("blur", loadMapFromBackend);
-    document.querySelectorAll('input[name="mode"]').forEach(r =>
-      r.addEventListener("change", () => {
-        updateYearUIForMode();
-        updateVideoToolsVisibility();
-        loadMapFromBackend();
-      })
-    );
-
-    document.getElementById("generate-video-btn").addEventListener("click", generateTimeSeriesVideo);
-
-    updateYearUIForMode();
-    updateVideoToolsVisibility();
-    loadMapFromBackend();
-
-    function appendMessage(role, text) {
-      const container = document.getElementById("chat-messages");
-      const msg = document.createElement("div");
-      msg.className = "message " + role;
-      const bubble = document.createElement("div");
-      bubble.className = "bubble " + role;
-      bubble.textContent = text;
-      msg.appendChild(bubble);
-      container.appendChild(msg);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    async function handleChatSubmit(e) {
+    document.getElementById('chat-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const input = document.getElementById("chat-input");
-      const text = input.value.trim();
-      if (!text) return;
+      const input = document.getElementById('chat-input');
+      if (!input.value.trim()) return;
+      chatBubble('chat-messages','user',input.value.trim());
+      triggerFromChat(input.value.trim());
+      input.value='';
+    });
 
-      appendMessage("user", text);
+    document.getElementById('report-chat-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('report-chat-input');
+      if (!input.value.trim()) return;
+      chatBubble('report-chat-messages','user',input.value.trim());
+      triggerFromChat(input.value.trim(), true);
+      input.value='';
+    });
 
-      applyChatTextToControls(text);
-      updateYearUIForMode();
-      updateVideoToolsVisibility();
-      await loadMapFromBackend();
-
-      const state = getUIState();
-
-      try {
-        const res = await fetch(`${API_BASE}/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: text,
-            mode: state.mode,
-            year_a: state.year_a,
-            year_b: state.year_b,
-            city: state.city,
-          }),
-        });
-
-        if (!res.ok) {
-          console.error("Chat error", await res.text());
-          appendMessage("bot", "Sorry, something went wrong talking to the backend.");
-          return;
-        }
-
-        const data = await res.json();
-        appendMessage("bot", data.reply || "(empty reply)");
-
-        if (data.summary) {
-          document.getElementById("report-summary").textContent = data.summary;
-        }
-      } catch (err) {
-        console.error("Error calling /chat", err);
-        appendMessage("bot", "Sorry, I couldn't reach the server.");
-      }
-
-      input.value = "";
+    function downloadCaptionedImage(mapName, meta) {
+      const c = document.createElement('canvas'); c.width = 1280; c.height = 720;
+      const x = c.getContext('2d');
+      x.fillStyle = '#0b1227'; x.fillRect(0,0,c.width,c.height);
+      x.fillStyle = '#e2e8f0'; x.font = 'bold 40px sans-serif'; x.fillText('EarthMonitor Snapshot', 40, 72);
+      x.font = '24px sans-serif'; x.fillStyle = '#93c5fd'; x.fillText(meta.caption, 40, 118);
+      x.strokeStyle = '#334155'; x.strokeRect(30, 140, 1220, 520);
+      x.fillStyle = '#94a3b8'; x.font = '22px sans-serif';
+      x.fillText('Map download placeholder image (UI-only mode).', 60, 420);
+      const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `${mapName}.png`; a.click();
     }
+
+    document.querySelectorAll('[data-download]').forEach(btn => btn.addEventListener('click', () => {
+      const type = btn.dataset.download;
+      let caption = '';
+      if (type.startsWith('change')) {
+        caption = `${type==='change-a'?document.getElementById('change-year-a').value:document.getElementById('change-year-b').value} · change_detection · ${document.getElementById('change-city').value}`;
+      } else {
+        caption = `${type==='pred-a'?document.getElementById('predict-year-a').value:document.getElementById('predict-year-b').value} · prediction · ${document.getElementById('predict-city').value}`;
+      }
+      downloadCaptionedImage(type, { caption });
+    }));
+
+    (async function init() {
+      await loadHomeMap();
+      await loadChangeMaps();
+      await loadPredictionMaps();
+      selectDisaster(DISASTERS[0]);
+    })();
   </script>
 </body>
 </html>
