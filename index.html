@@ -14,68 +14,86 @@
       --text: #e2e8f0;
       --muted: #94a3b8;
       --accent: #3b82f6;
-      --good: #22c55e;
-      --warn: #f59e0b;
-      --bad: #ef4444;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: Inter, system-ui, sans-serif; background: radial-gradient(circle at top left, #0b1227, #020617); color: var(--text); }
     .app-shell { height: 100vh; display: grid; grid-template-rows: 72px 52px 1fr; }
-    .top { display:flex; justify-content:space-between; align-items:center; padding:0 20px; border-bottom:1px solid var(--line); background: rgba(2,6,23,.8); }
-    .brand { font-weight: 800; font-size: 24px; }
-    .sub { font-size: 12px; color: var(--muted); }
+    .top { display:flex; justify-content:space-between; align-items:center; padding:0 20px; border-bottom:1px solid var(--line); background: rgba(2,6,23,.82); }
+    .brand { font-weight:800; font-size:24px; }
+    .sub { font-size:12px; color:var(--muted); }
+
     .tabs { display:flex; gap:10px; padding:10px 20px; border-bottom:1px solid var(--line); background:#060d22; }
     .tab-btn { border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:999px; padding:8px 14px; cursor:pointer; font-size:13px; }
-    .tab-btn.active { background: var(--accent); border-color: var(--accent); }
+    .tab-btn.active { background:var(--accent); border-color:var(--accent); }
+
     .tab { display:none; height:100%; padding:14px 20px 18px; gap:12px; }
     .tab.active { display:grid; }
-
     .panel { background: var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; }
     .title { font-size:14px; font-weight:700; margin-bottom:8px; }
     .caption { color:var(--muted); font-size:12px; margin-bottom:8px; }
 
-    #tab-home { grid-template-columns: minmax(0,1fr) 340px; }
-    #tab-change, #tab-predict { grid-template-columns: 320px minmax(0,1fr); }
-    #tab-report { grid-template-columns: 340px minmax(0,1fr); }
-
+    .layout-two { display:grid; grid-template-columns: 320px minmax(0,1fr); gap:12px; }
     .map-big { height:100%; min-height:520px; border-radius:12px; border:1px solid var(--line); overflow:hidden; }
-    .map-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; min-height:520px; }
+    .map-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; min-height:500px; }
     .map-card { border:1px solid var(--line); border-radius:12px; overflow:hidden; display:grid; grid-template-rows:auto 1fr auto; background:#020617; }
-    .map-head { padding:8px 10px; font-size:12px; color:var(--muted); border-bottom:1px solid var(--line); }
+    .map-head { padding:8px 10px; font-size:12px; color:var(--muted); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; }
     .map-view { min-height:360px; }
     .map-tools { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px; border-top:1px solid var(--line); }
 
-    .btn { border:none; border-radius:10px; padding:8px 10px; background: var(--accent); color:white; cursor:pointer; font-size:12px; }
+    .btn { border:none; border-radius:10px; padding:8px 10px; background:var(--accent); color:white; cursor:pointer; font-size:12px; }
     .btn.secondary { background:#1e293b; border:1px solid var(--line); }
-    .btn.full { width:100%; }
 
-    .field { margin-bottom:10px; }
+    .top-options {
+      display:grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1fr auto auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+      padding:10px;
+      background:#091127;
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
     .field label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
-    input, select, textarea { width:100%; background:#020617; color:var(--text); border:1px solid #334155; border-radius:10px; padding:8px 10px; font-size:12px; }
-    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    input, select { width:100%; background:#020617; color:var(--text); border:1px solid #334155; border-radius:10px; padding:8px 10px; font-size:12px; }
 
-    .disaster-list { display:flex; flex-direction:column; gap:8px; max-height:280px; overflow:auto; }
+    .disaster-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow:auto; }
     .disaster-item { background: var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; cursor:pointer; }
     .disaster-item small { color:var(--muted); display:block; margin-top:3px; }
 
-    .chat-wrap { display:grid; grid-template-rows: 1fr auto; min-height:240px; }
-    .chat-messages { border:1px solid #334155; border-radius:10px; padding:8px; overflow:auto; background:#020617; height:200px; margin-bottom:8px; }
+    .chat-wrap { display:grid; grid-template-rows: 1fr auto; min-height:280px; }
+    .chat-messages { border:1px solid #334155; border-radius:10px; padding:8px; overflow:auto; background:#020617; height:230px; margin-bottom:8px; }
     .bubble { border-radius:10px; padding:6px 8px; margin-bottom:6px; font-size:12px; }
     .bubble.bot { background:#1e293b; }
     .bubble.user { background:#2563eb; }
 
-    .stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
-    .stat { background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; }
-    .stat .k { font-size:11px; color:var(--muted); }
-    .stat .v { font-size:18px; font-weight:700; }
+    .stats-bar {
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      background:#0a142b;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
+    }
+    .metric { background:#111c33; border:1px solid var(--line); border-radius:10px; padding:10px; }
+    .metric .k { font-size:11px; color:var(--muted); }
+    .metric .v { font-size:20px; font-weight:700; margin:4px 0 8px; }
+    .bar { height:8px; background:#0b1227; border:1px solid #334155; border-radius:999px; overflow:hidden; }
+    .bar > span { display:block; height:100%; }
 
-    .report-box { min-height:260px; }
-    .report-box ul { padding-left:16px; color:var(--muted); font-size:13px; line-height:1.6; }
+    #tab-home { grid-template-columns: minmax(0,1fr) 340px; }
+    #tab-change, #tab-predict, #tab-report { grid-template-columns:1fr; }
 
-    @media (max-width: 1080px) {
-      #tab-home, #tab-change, #tab-predict, #tab-report { grid-template-columns:1fr; }
+    @media (max-width: 1180px) {
+      .top-options { grid-template-columns: 1fr 1fr 1fr; }
+      .layout-two, #tab-home { grid-template-columns:1fr; }
       .map-two { grid-template-columns:1fr; }
-      .map-big, .map-two { min-height:420px; }
+      .stats-bar { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -90,16 +108,16 @@
     </header>
 
     <nav class="tabs">
-      <button class="tab-btn active" data-tab="home">1) Home</button>
-      <button class="tab-btn" data-tab="change">2) Change Detection</button>
-      <button class="tab-btn" data-tab="predict">3) Prediction</button>
-      <button class="tab-btn" data-tab="report">4) Report Generation</button>
+      <button class="tab-btn active" data-tab="home">Home</button>
+      <button class="tab-btn" data-tab="change">Change Detection</button>
+      <button class="tab-btn" data-tab="predict">Prediction</button>
+      <button class="tab-btn" data-tab="report">Report Generation</button>
     </nav>
 
     <section class="tab active" id="tab-home">
       <div class="panel">
         <div class="title">Global Home Map</div>
-        <div class="caption">Two layers enabled: satellite and Dynamic World.</div>
+        <div class="caption">Satellite and Dynamic World layers are available.</div>
         <div id="homeMap" class="map-big"></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;">
@@ -109,11 +127,11 @@
         </div>
         <div class="panel">
           <div class="title">Assistant</div>
-          <div class="caption">Ask to switch tabs/functions: “go to prediction tab”, “open change detection”.</div>
+          <div class="caption">Try: "open prediction", "open report", "generate report".</div>
           <div class="chat-wrap">
             <div class="chat-messages" id="chat-messages"></div>
             <form id="chat-form" style="display:flex;gap:6px;">
-              <input id="chat-input" placeholder="Ask for actions or analysis" />
+              <input id="chat-input" placeholder="Ask for actions" />
               <button class="btn" type="submit">Send</button>
             </form>
           </div>
@@ -122,88 +140,129 @@
     </section>
 
     <section class="tab" id="tab-change">
-      <div class="panel">
-        <div class="title">Change Detection Options</div>
+      <div class="top-options">
         <div class="field"><label>Location</label><input id="change-city" value="Dubai" /></div>
-        <div class="grid2">
-          <div class="field"><label>Before year</label><select id="change-year-a"></select></div>
-          <div class="field"><label>After year</label><select id="change-year-b"></select></div>
-        </div>
-        <button class="btn full" id="change-refresh">Update maps</button>
-        <div class="stats" id="stats-box">
-          <div class="stat"><div class="k">Changed pixels</div><div class="v" id="stat-change">--</div></div>
-          <div class="stat"><div class="k">Dominant class</div><div class="v" id="stat-class">--</div></div>
-        </div>
+        <div class="field"><label>Before year</label><select id="change-year-a"></select></div>
+        <div class="field"><label>After year</label><select id="change-year-b"></select></div>
+        <div class="field"><label>Mode</label><input value="Change Detection" disabled /></div>
+        <button class="btn" id="change-refresh">Update Maps</button>
+        <button class="btn secondary" id="change-video-btn">Download Timelapse Video</button>
       </div>
-      <div class="map-two">
-        <div class="map-card">
-          <div class="map-head" id="change-a-title">Before</div>
-          <div id="changeMapA" class="map-view"></div>
-          <div class="map-tools">
-            <small>Caption: year · function · location</small>
-            <button class="btn secondary" data-download="change-a">Download image</button>
+
+      <div class="layout-two">
+        <div class="panel">
+          <div class="title">Assistant (Left)</div>
+          <div class="chat-wrap">
+            <div class="chat-messages" id="change-chat-messages"></div>
+            <form id="change-chat-form" style="display:flex;gap:6px;">
+              <input id="change-chat-input" placeholder="Ask assistant to switch tabs/functions" />
+              <button class="btn" type="submit">Send</button>
+            </form>
           </div>
+          <div class="caption" id="video-status">Timelapse video status will appear here.</div>
+          <a id="video-download-link" style="display:none;color:#93c5fd;font-size:12px;text-decoration:none;" download>Download video</a>
         </div>
-        <div class="map-card">
-          <div class="map-head" id="change-b-title">After</div>
-          <div id="changeMapB" class="map-view"></div>
-          <div class="map-tools">
-            <small>Caption: year · function · location</small>
-            <button class="btn secondary" data-download="change-b">Download image</button>
+
+        <div>
+          <div class="map-two">
+            <div class="map-card">
+              <div class="map-head"><span>Before Map</span><strong id="change-a-year">Year --</strong></div>
+              <div id="changeMapA" class="map-view"></div>
+              <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="change-a">Download image</button></div>
+            </div>
+            <div class="map-card">
+              <div class="map-head"><span>After Map</span><strong id="change-b-year">Year --</strong></div>
+              <div id="changeMapB" class="map-view"></div>
+              <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="change-b">Download image</button></div>
+            </div>
+          </div>
+
+          <div class="stats-bar">
+            <div class="metric">
+              <div class="k">Changed Area</div>
+              <div class="v" id="stat-change">--%</div>
+              <div class="bar"><span id="bar-change" style="width:0%;background:var(--red);"></span></div>
+            </div>
+            <div class="metric">
+              <div class="k">Urban Growth</div>
+              <div class="v" id="stat-urban">--%</div>
+              <div class="bar"><span id="bar-urban" style="width:0%;background:var(--amber);"></span></div>
+            </div>
+            <div class="metric">
+              <div class="k">Vegetation Stability</div>
+              <div class="v" id="stat-veg">--%</div>
+              <div class="bar"><span id="bar-veg" style="width:0%;background:var(--green);"></span></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <section class="tab" id="tab-predict">
-      <div class="panel">
-        <div class="title">Prediction Function</div>
+      <div class="top-options">
         <div class="field"><label>Location</label><input id="predict-city" value="Dubai" /></div>
-        <div class="grid2">
-          <div class="field"><label>Input year (before)</label><select id="predict-year-a"></select></div>
-          <div class="field"><label>Target year (prediction)</label><select id="predict-year-b"></select></div>
-        </div>
-        <button class="btn full" id="predict-refresh">Run prediction view</button>
+        <div class="field"><label>Input year</label><select id="predict-year-a"></select></div>
+        <div class="field"><label>Prediction year</label><select id="predict-year-b"></select></div>
+        <div class="field"><label>Mode</label><input value="Prediction" disabled /></div>
+        <button class="btn" id="predict-refresh">Run Prediction</button>
+        <div></div>
       </div>
-      <div class="map-two">
-        <div class="map-card">
-          <div class="map-head" id="pred-a-title">Before</div>
-          <div id="predictMapA" class="map-view"></div>
-          <div class="map-tools"><small>Before image</small><button class="btn secondary" data-download="pred-a">Download image</button></div>
+
+      <div class="layout-two">
+        <div class="panel">
+          <div class="title">Assistant (Left)</div>
+          <div class="chat-wrap">
+            <div class="chat-messages" id="predict-chat-messages"></div>
+            <form id="predict-chat-form" style="display:flex;gap:6px;">
+              <input id="predict-chat-input" placeholder="Ask assistant to move tabs/functions" />
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
         </div>
-        <div class="map-card">
-          <div class="map-head" id="pred-b-title">After (Prediction)</div>
-          <div id="predictMapB" class="map-view"></div>
-          <div class="map-tools"><small>Prediction image</small><button class="btn secondary" data-download="pred-b">Download image</button></div>
+
+        <div class="map-two">
+          <div class="map-card">
+            <div class="map-head"><span>Before Map</span><strong id="pred-a-year">Year --</strong></div>
+            <div id="predictMapA" class="map-view"></div>
+            <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-a">Download image</button></div>
+          </div>
+          <div class="map-card">
+            <div class="map-head"><span>After (Prediction)</span><strong id="pred-b-year">Year --</strong></div>
+            <div id="predictMapB" class="map-view"></div>
+            <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-b">Download image</button></div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="tab" id="tab-report">
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="panel">
-          <div class="title">Disasters List</div>
-          <div class="disaster-list" id="report-disasters"></div>
-        </div>
-        <div class="panel">
-          <div class="title">Report Assistant</div>
-          <div class="chat-wrap">
-            <div class="chat-messages" id="report-chat-messages"></div>
-            <form id="report-chat-form" style="display:flex;gap:6px;">
-              <input id="report-chat-input" placeholder="Ask to generate report summary" />
-              <button class="btn" type="submit">Send</button>
-            </form>
+      <div class="layout-two">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="panel">
+            <div class="title">Disasters List</div>
+            <div class="disaster-list" id="report-disasters"></div>
+          </div>
+          <div class="panel">
+            <div class="title">Report Assistant</div>
+            <div class="chat-wrap">
+              <div class="chat-messages" id="report-chat-messages"></div>
+              <form id="report-chat-form" style="display:flex;gap:6px;">
+                <input id="report-chat-input" placeholder="Ask to generate report summary" />
+                <button class="btn" type="submit">Send</button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="panel report-box">
-        <div class="title">Generated Report Preview</div>
-        <div class="caption" id="report-title">Select a disaster to load report/before/after links.</div>
-        <ul id="report-preview">
-          <li>Disaster metadata will appear here.</li>
-          <li>Before/After image links will appear here.</li>
-          <li>Assistant-generated report points will appear here.</li>
-        </ul>
+
+        <div class="panel">
+          <div class="title">Generated Report Preview</div>
+          <div class="caption" id="report-title">Select a disaster to load details.</div>
+          <ul id="report-preview" style="padding-left:16px;color:var(--muted);line-height:1.8;">
+            <li>Disaster metadata will appear here.</li>
+            <li>Before/After image links will appear here.</li>
+            <li>Assistant-generated points will appear here.</li>
+          </ul>
+        </div>
       </div>
     </section>
   </div>
@@ -215,9 +274,9 @@
     const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024];
     const DISASTERS = [
       { id:"d1", name:"Türkiye Earthquake", location:"Kahramanmaraş", yearA:2022, yearB:2023, report:"Severe urban collapse visible in built-up classes." },
-      { id:"d2", name:"Pakistan Floods", location:"Sindh", yearA:2021, yearB:2022, report:"Flooded vegetation and water classes significantly increased." },
-      { id:"d3", name:"Maui Wildfire", location:"Lahaina", yearA:2022, yearB:2023, report:"Vegetation-to-bare/built transitions near burn scar." },
-      { id:"d4", name:"Libya Flood", location:"Derna", yearA:2022, yearB:2023, report:"River corridor damage and built-area disturbance detected." }
+      { id:"d2", name:"Pakistan Floods", location:"Sindh", yearA:2021, yearB:2022, report:"Flooded vegetation and water classes increased." },
+      { id:"d3", name:"Maui Wildfire", location:"Lahaina", yearA:2022, yearB:2023, report:"Vegetation-to-bare transitions near burn scar." },
+      { id:"d4", name:"Libya Flood", location:"Derna", yearA:2022, yearB:2023, report:"Built-area disturbance and flood expansion detected." }
     ];
 
     const tabs = document.querySelectorAll('.tab-btn');
@@ -228,45 +287,34 @@
     }
     tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
-    function fillYears(a, b) {
-      YEARS.forEach(y => { a.insertAdjacentHTML('beforeend', `<option ${y===2021?'selected':''}>${y}</option>`); b.insertAdjacentHTML('beforeend', `<option ${y===2023?'selected':''}>${y}</option>`); });
-    }
+    function fillYears(a,b){ YEARS.forEach(y=>{ a.insertAdjacentHTML('beforeend',`<option ${y===2021?'selected':''}>${y}</option>`); b.insertAdjacentHTML('beforeend',`<option ${y===2023?'selected':''}>${y}</option>`); }); }
     fillYears(document.getElementById('change-year-a'), document.getElementById('change-year-b'));
     fillYears(document.getElementById('predict-year-a'), document.getElementById('predict-year-b'));
 
     const maps = {};
-    function baseMap(id, center=[25.2,55.3], z=8) {
-      const sat = L.tileLayer(SAT_URL, { maxZoom: 19, crossOrigin: true, attribution:'Esri' });
+    function baseMap(id, center=[25.2,55.3], z=8){
+      const sat = L.tileLayer(SAT_URL, { maxZoom:19, crossOrigin:true, attribution:'Esri' });
       const m = L.map(id, { center, zoom:z, layers:[sat] });
       return { m, sat };
     }
 
-    const home = baseMap('homeMap', [26.3,55.28], 4);
-    maps.home = home.m;
-    let homeDw = null;
+    const home = baseMap('homeMap', [26.3,55.28], 4); maps.home = home.m; let homeDw = null;
+    const chA = baseMap('changeMapA'); const chB = baseMap('changeMapB'); maps.chA=chA.m; maps.chB=chB.m; let chDwA=null, chDwB=null;
+    const prA = baseMap('predictMapA'); const prB = baseMap('predictMapB'); maps.prA=prA.m; maps.prB=prB.m; let prDwA=null, prDwB=null;
 
-    const chA = baseMap('changeMapA'); const chB = baseMap('changeMapB');
-    maps.chA = chA.m; maps.chB = chB.m;
-    let chDwA=null, chDwB=null;
-
-    const prA = baseMap('predictMapA'); const prB = baseMap('predictMapB');
-    maps.prA = prA.m; maps.prB = prB.m;
-    let prDwA=null, prDwB=null;
-
-    function chatBubble(containerId, role, text) {
+    function chatBubble(containerId, role, text){
       const c = document.getElementById(containerId);
       const d = document.createElement('div'); d.className = `bubble ${role}`; d.textContent = text; c.appendChild(d); c.scrollTop = c.scrollHeight;
     }
-    chatBubble('chat-messages','bot','Hi! I can open tabs and help with disaster workflows.');
-    chatBubble('report-chat-messages','bot','Ask me to generate report bullets from selected disaster.');
+    ['chat-messages','change-chat-messages','predict-chat-messages','report-chat-messages'].forEach(id=>chatBubble(id,'bot','Ready. Ask me to navigate tabs or generate report bullets.'));
 
-    function renderDisasterList(targetId, onClick) {
+    function renderDisasterList(targetId, onClick){
       const el = document.getElementById(targetId);
       el.innerHTML = DISASTERS.map(d => `<div class="disaster-item" data-id="${d.id}"><strong>${d.name}</strong><small>${d.location} · ${d.yearA}→${d.yearB}</small></div>`).join('');
       el.querySelectorAll('.disaster-item').forEach(item => item.addEventListener('click', () => onClick(DISASTERS.find(d => d.id===item.dataset.id))));
     }
 
-    function selectDisaster(d) {
+    function selectDisaster(d){
       document.getElementById('change-city').value = d.location;
       document.getElementById('predict-city').value = d.location;
       document.getElementById('change-year-a').value = String(d.yearA);
@@ -274,126 +322,147 @@
       document.getElementById('predict-year-a').value = String(d.yearA);
       document.getElementById('predict-year-b').value = String(d.yearB);
       document.getElementById('report-title').textContent = `${d.name} — ${d.location}`;
-      document.getElementById('report-preview').innerHTML = `<li>Report: ${d.report}</li><li>Before image: ${d.yearA} (Dynamic World)</li><li>After image: ${d.yearB} (Dynamic World)</li>`;
+      document.getElementById('report-preview').innerHTML = `<li>Report: ${d.report}</li><li>Before image: ${d.yearA} for ${d.location}</li><li>After image: ${d.yearB} for ${d.location}</li>`;
       loadChangeMaps();
       loadPredictionMaps();
     }
 
-    renderDisasterList('home-disasters', (d)=>{ selectDisaster(d); switchTab('change'); });
+    renderDisasterList('home-disasters', d=>{ selectDisaster(d); switchTab('change'); });
     renderDisasterList('report-disasters', selectDisaster);
 
-    async function fetchMap(mode, year_a, year_b, city) {
-      const res = await fetch(`${API_BASE}/map-config`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({mode, year_a, year_b, city})
-      });
-      if (!res.ok) throw new Error(await res.text());
+    async function fetchMap(mode, year_a, year_b, city){
+      const res = await fetch(`${API_BASE}/map-config`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mode, year_a, year_b, city}) });
+      if(!res.ok) throw new Error(await res.text());
       return res.json();
     }
 
-    async function loadHomeMap() {
+    async function loadHomeMap(){
       const data = await fetchMap('change_detection', 2022, 2023, 'Dubai');
       home.m.setView([data.center_lat, data.center_lon], 8);
-      if (homeDw) home.m.removeLayer(homeDw);
-      homeDw = L.tileLayer(data.tiles.a, { opacity:0.75, crossOrigin:true }).addTo(home.m);
-      L.control.layers({"Satellite": home.sat}, {"Dynamic World": homeDw}, {position:'topleft'}).addTo(home.m);
+      if(homeDw) home.m.removeLayer(homeDw);
+      homeDw = L.tileLayer(data.tiles.a, { opacity:.75, crossOrigin:true }).addTo(home.m);
+      L.control.layers({"Satellite":home.sat},{"Dynamic World":homeDw},{position:'topleft'}).addTo(home.m);
     }
 
-    function randomStats() {
-      document.getElementById('stat-change').textContent = `${Math.floor(Math.random()*40)+18}%`;
-      document.getElementById('stat-class').textContent = ['Built Area','Water','Trees','Crops'][Math.floor(Math.random()*4)];
+    function setStats(){
+      const c = Math.floor(Math.random()*40)+18;
+      const u = Math.floor(Math.random()*35)+10;
+      const v = Math.floor(Math.random()*30)+60;
+      document.getElementById('stat-change').textContent = `${c}%`;
+      document.getElementById('stat-urban').textContent = `${u}%`;
+      document.getElementById('stat-veg').textContent = `${v}%`;
+      document.getElementById('bar-change').style.width = `${c}%`;
+      document.getElementById('bar-urban').style.width = `${u}%`;
+      document.getElementById('bar-veg').style.width = `${v}%`;
     }
 
-    async function loadChangeMaps() {
+    async function loadChangeMaps(){
       const city = document.getElementById('change-city').value;
       const a = Number(document.getElementById('change-year-a').value);
       const b = Number(document.getElementById('change-year-b').value);
       const data = await fetchMap('change_detection', a, b, city);
-      document.getElementById('change-a-title').textContent = `Before (${a})`;
-      document.getElementById('change-b-title').textContent = `After (${b})`;
-      chA.m.setView([data.center_lat, data.center_lon], 10);
-      chB.m.setView([data.center_lat, data.center_lon], 10);
-      if (chDwA) chA.m.removeLayer(chDwA);
-      if (chDwB) chB.m.removeLayer(chDwB);
-      chDwA = L.tileLayer(data.tiles.a, { opacity:0.9, crossOrigin:true }).addTo(chA.m);
-      chDwB = L.tileLayer(data.tiles.b, { opacity:0.9, crossOrigin:true }).addTo(chB.m);
-      randomStats();
+      document.getElementById('change-a-year').textContent = `Year ${a}`;
+      document.getElementById('change-b-year').textContent = `Year ${b}`;
+      chA.m.setView([data.center_lat, data.center_lon], 10); chB.m.setView([data.center_lat, data.center_lon], 10);
+      if(chDwA) chA.m.removeLayer(chDwA); if(chDwB) chB.m.removeLayer(chDwB);
+      chDwA = L.tileLayer(data.tiles.a, { opacity:.9, crossOrigin:true }).addTo(chA.m);
+      chDwB = L.tileLayer(data.tiles.b, { opacity:.9, crossOrigin:true }).addTo(chB.m);
+      setStats();
     }
 
-    async function loadPredictionMaps() {
+    async function loadPredictionMaps(){
       const city = document.getElementById('predict-city').value;
       const a = Number(document.getElementById('predict-year-a').value);
       const b = Number(document.getElementById('predict-year-b').value);
       const data = await fetchMap('change_detection', a, b, city);
-      document.getElementById('pred-a-title').textContent = `Before (${a})`;
-      document.getElementById('pred-b-title').textContent = `After (${b}) Prediction`;
-      prA.m.setView([data.center_lat, data.center_lon], 10);
-      prB.m.setView([data.center_lat, data.center_lon], 10);
-      if (prDwA) prA.m.removeLayer(prDwA);
-      if (prDwB) prB.m.removeLayer(prDwB);
-      prDwA = L.tileLayer(data.tiles.a, { opacity:0.9, crossOrigin:true }).addTo(prA.m);
-      prDwB = L.tileLayer(data.tiles.b, { opacity:0.75, crossOrigin:true }).addTo(prB.m);
+      document.getElementById('pred-a-year').textContent = `Year ${a}`;
+      document.getElementById('pred-b-year').textContent = `Year ${b}`;
+      prA.m.setView([data.center_lat, data.center_lon], 10); prB.m.setView([data.center_lat, data.center_lon], 10);
+      if(prDwA) prA.m.removeLayer(prDwA); if(prDwB) prB.m.removeLayer(prDwB);
+      prDwA = L.tileLayer(data.tiles.a, { opacity:.9, crossOrigin:true }).addTo(prA.m);
+      prDwB = L.tileLayer(data.tiles.b, { opacity:.75, crossOrigin:true }).addTo(prB.m);
     }
 
-    document.getElementById('change-refresh').addEventListener('click', loadChangeMaps);
-    document.getElementById('predict-refresh').addEventListener('click', loadPredictionMaps);
-
-    function triggerFromChat(text, fromReport=false) {
-      const t = text.toLowerCase();
-      if (t.includes('home')) switchTab('home');
-      if (t.includes('change')) switchTab('change');
-      if (t.includes('predict')) switchTab('predict');
-      if (t.includes('report')) switchTab('report');
-      if (t.includes('generate report')) {
-        const rp = document.getElementById('report-preview');
-        rp.insertAdjacentHTML('beforeend', '<li>Generated: infrastructure loss estimate, vegetation impact, and response priority zones.</li>');
+    async function generateChangeVideo(){
+      const status = document.getElementById('video-status');
+      const link = document.getElementById('video-download-link');
+      const city = document.getElementById('change-city').value;
+      const a = Number(document.getElementById('change-year-a').value);
+      const b = Number(document.getElementById('change-year-b').value);
+      status.textContent = 'Generating timelapse video...';
+      link.style.display = 'none';
+      try {
+        const res = await fetch(`${API_BASE}/timeseries-video`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ year_a:a, year_b:b, city, fps:2, size:768, radius_m:5000 })
+        });
+        if(!res.ok){ status.textContent = 'Failed to generate timelapse video.'; return; }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `timelapse_${city.replace(/\s+/g,'_')}_${a}_${b}.mp4`;
+        link.textContent = 'Download timelapse video';
+        link.style.display = 'inline-block';
+        status.textContent = 'Timelapse video ready.';
+      } catch {
+        status.textContent = 'Error while generating timelapse video.';
       }
-      if (t.includes('download')) alert('Use the Download image buttons under each map.');
-      chatBubble(fromReport ? 'report-chat-messages':'chat-messages', 'bot', 'Done. I executed the requested UI function.');
     }
 
-    document.getElementById('chat-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('chat-input');
-      if (!input.value.trim()) return;
-      chatBubble('chat-messages','user',input.value.trim());
-      triggerFromChat(input.value.trim());
-      input.value='';
-    });
+    function triggerFromChat(text, target='chat-messages'){
+      const t = text.toLowerCase();
+      if(t.includes('home')) switchTab('home');
+      if(t.includes('change')) switchTab('change');
+      if(t.includes('predict')) switchTab('predict');
+      if(t.includes('report')) switchTab('report');
+      if(t.includes('generate report')) document.getElementById('report-preview').insertAdjacentHTML('beforeend','<li>Generated: impact summary, affected zones, and action priorities.</li>');
+      if(t.includes('video')) generateChangeVideo();
+      chatBubble(target, 'bot', 'Done. I updated the requested function.');
+    }
 
-    document.getElementById('report-chat-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('report-chat-input');
-      if (!input.value.trim()) return;
-      chatBubble('report-chat-messages','user',input.value.trim());
-      triggerFromChat(input.value.trim(), true);
-      input.value='';
-    });
+    function bindChat(formId, inputId, containerId){
+      document.getElementById(formId).addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const input = document.getElementById(inputId);
+        const text = input.value.trim();
+        if(!text) return;
+        chatBubble(containerId, 'user', text);
+        triggerFromChat(text, containerId);
+        input.value='';
+      });
+    }
+    bindChat('chat-form','chat-input','chat-messages');
+    bindChat('change-chat-form','change-chat-input','change-chat-messages');
+    bindChat('predict-chat-form','predict-chat-input','predict-chat-messages');
+    bindChat('report-chat-form','report-chat-input','report-chat-messages');
 
-    function downloadCaptionedImage(mapName, meta) {
+    function downloadCaptionedImage(name, year, location){
       const c = document.createElement('canvas'); c.width = 1280; c.height = 720;
       const x = c.getContext('2d');
       x.fillStyle = '#0b1227'; x.fillRect(0,0,c.width,c.height);
-      x.fillStyle = '#e2e8f0'; x.font = 'bold 40px sans-serif'; x.fillText('EarthMonitor Snapshot', 40, 72);
-      x.font = '24px sans-serif'; x.fillStyle = '#93c5fd'; x.fillText(meta.caption, 40, 118);
-      x.strokeStyle = '#334155'; x.strokeRect(30, 140, 1220, 520);
-      x.fillStyle = '#94a3b8'; x.font = '22px sans-serif';
-      x.fillText('Map download placeholder image (UI-only mode).', 60, 420);
-      const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `${mapName}.png`; a.click();
+      x.fillStyle = '#e2e8f0'; x.font = 'bold 42px sans-serif'; x.fillText('EarthMonitor Map Export', 40, 76);
+      x.font = '24px sans-serif'; x.fillStyle = '#93c5fd'; x.fillText(`Year: ${year}   Location: ${location}`, 40, 118);
+      x.strokeStyle = '#334155'; x.strokeRect(30, 145, 1220, 520);
+      x.fillStyle = '#94a3b8'; x.font = '22px sans-serif'; x.fillText('Map image placeholder (UI-only export).', 70, 420);
+      const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `${name}_${location.replace(/\s+/g,'_')}_${year}.png`; a.click();
     }
 
-    document.querySelectorAll('[data-download]').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-download]').forEach(btn => btn.addEventListener('click', ()=>{
       const type = btn.dataset.download;
-      let caption = '';
-      if (type.startsWith('change')) {
-        caption = `${type==='change-a'?document.getElementById('change-year-a').value:document.getElementById('change-year-b').value} · change_detection · ${document.getElementById('change-city').value}`;
+      if(type.startsWith('change')){
+        const year = type === 'change-a' ? document.getElementById('change-year-a').value : document.getElementById('change-year-b').value;
+        downloadCaptionedImage(type, year, document.getElementById('change-city').value);
       } else {
-        caption = `${type==='pred-a'?document.getElementById('predict-year-a').value:document.getElementById('predict-year-b').value} · prediction · ${document.getElementById('predict-city').value}`;
+        const year = type === 'pred-a' ? document.getElementById('predict-year-a').value : document.getElementById('predict-year-b').value;
+        downloadCaptionedImage(type, year, document.getElementById('predict-city').value);
       }
-      downloadCaptionedImage(type, { caption });
     }));
 
-    (async function init() {
+    document.getElementById('change-refresh').addEventListener('click', loadChangeMaps);
+    document.getElementById('predict-refresh').addEventListener('click', loadPredictionMaps);
+    document.getElementById('change-video-btn').addEventListener('click', generateChangeVideo);
+
+    (async function init(){
       await loadHomeMap();
       await loadChangeMaps();
       await loadPredictionMaps();
