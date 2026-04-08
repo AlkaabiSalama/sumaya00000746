@@ -140,15 +140,6 @@
     </section>
 
     <section class="tab" id="tab-change">
-      <div class="top-options">
-        <div class="field"><label>Location</label><input id="change-city" value="Dubai" /></div>
-        <div class="field"><label>Before year</label><select id="change-year-a"></select></div>
-        <div class="field"><label>After year</label><select id="change-year-b"></select></div>
-        <div class="field"><label>Mode</label><input value="Change Detection" disabled /></div>
-        <button class="btn" id="change-refresh">Update Maps</button>
-        <button class="btn secondary" id="change-video-btn">Download Timelapse Video</button>
-      </div>
-
       <div class="layout-two">
         <div class="panel">
           <div class="title">Assistant (Left)</div>
@@ -164,6 +155,15 @@
         </div>
 
         <div>
+          <div class="top-options">
+            <div class="field"><label>Location</label><input id="change-city" value="Dubai" /></div>
+            <div class="field"><label>Before year</label><select id="change-year-a"></select></div>
+            <div class="field"><label>After year</label><select id="change-year-b"></select></div>
+            <div class="field"><label>Mode</label><input value="Change Detection" disabled /></div>
+            <button class="btn" id="change-refresh">Update Maps</button>
+            <button class="btn secondary" id="change-video-btn">Download Timelapse Video</button>
+          </div>
+
           <div class="map-two">
             <div class="map-card">
               <div class="map-head"><span>Before Map</span><strong id="change-a-year">Year --</strong></div>
@@ -199,15 +199,6 @@
     </section>
 
     <section class="tab" id="tab-predict">
-      <div class="top-options">
-        <div class="field"><label>Location</label><input id="predict-city" value="Dubai" /></div>
-        <div class="field"><label>Input year</label><select id="predict-year-a"></select></div>
-        <div class="field"><label>Prediction year</label><select id="predict-year-b"></select></div>
-        <div class="field"><label>Mode</label><input value="Prediction" disabled /></div>
-        <button class="btn" id="predict-refresh">Run Prediction</button>
-        <div></div>
-      </div>
-
       <div class="layout-two">
         <div class="panel">
           <div class="title">Assistant (Left)</div>
@@ -220,16 +211,26 @@
           </div>
         </div>
 
-        <div class="map-two">
-          <div class="map-card">
-            <div class="map-head"><span>Before Map</span><strong id="pred-a-year">Year --</strong></div>
-            <div id="predictMapA" class="map-view"></div>
-            <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-a">Download image</button></div>
+        <div>
+          <div class="top-options">
+            <div class="field"><label>Location</label><input id="predict-city" value="Dubai" /></div>
+            <div class="field"><label>Input year</label><select id="predict-year-a"></select></div>
+            <div class="field"><label>Prediction year</label><select id="predict-year-b"></select></div>
+            <div class="field"><label>Mode</label><input value="Prediction" disabled /></div>
+            <button class="btn" id="predict-refresh">Run Prediction</button>
+            <div></div>
           </div>
-          <div class="map-card">
-            <div class="map-head"><span>After (Prediction)</span><strong id="pred-b-year">Year --</strong></div>
-            <div id="predictMapB" class="map-view"></div>
-            <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-b">Download image</button></div>
+          <div class="map-two">
+            <div class="map-card">
+              <div class="map-head"><span>Before Map</span><strong id="pred-a-year">Year --</strong></div>
+              <div id="predictMapA" class="map-view"></div>
+              <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-a">Download image</button></div>
+            </div>
+            <div class="map-card">
+              <div class="map-head"><span>After (Prediction)</span><strong id="pred-b-year">Year --</strong></div>
+              <div id="predictMapB" class="map-view"></div>
+              <div class="map-tools"><small>Download includes year + location</small><button class="btn secondary" data-download="pred-b">Download image</button></div>
+            </div>
           </div>
         </div>
       </div>
